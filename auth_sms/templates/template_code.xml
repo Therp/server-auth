@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <template id="template_code" inherit_id="web.login" primary="True">
+    <template id="template_code" inherit_id="web.login" primary="True" priority="128">
         <xpath expr="//form" position="attributes">
             <attribute name="t-attf-action">/auth_sms/code</attribute>
+            <attribute name="onsubmit" />
         </xpath>
         <xpath expr="//form" position="inside">
             <input type="hidden" name="secret" t-att-value="secret" />

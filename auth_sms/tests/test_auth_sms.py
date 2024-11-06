@@ -79,7 +79,7 @@ class TestAuthSms(Common):
             mock_request_post.return_value.json.return_value = {
                 "originator": "originator",
             }
-            for i in range(9):
+            for _i in range(9):
                 response = endpoint()
                 self.assertNotIn("error", response.qcontext)
             response = endpoint()

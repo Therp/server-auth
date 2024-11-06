@@ -5,7 +5,8 @@
     "version": "16.0.1.0.0",
     "author": "Therp BV,Odoo Community Association (OCA)",
     "license": "AGPL-3",
-    "category": "Extra Tools",
+    "category": "Tools",
+    "website": "https://github.com/OCA/server-auth",
     "summary": "Enforces SMS verification for password resets",
     "depends": [
         "auth_signup",

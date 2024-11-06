@@ -67,6 +67,7 @@ class SmsProvider(models.Model):
                 "recipients": number,
                 "body": text,
             },
+            timeout=60,
         ).json()
         _logger.debug(result)
         if result.get("errors"):
