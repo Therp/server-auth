@@ -22,7 +22,7 @@ class AuthSms(Home):
             return super().web_login(redirect=redirect, **kw)
         except AccessDeniedNoSmsCode as exception:
             try:
-                request.env["res.users"].sudo()._auth_sms_send(exception.user.id)
+                request.env["res.users"]._auth_sms_send(exception.user.id)
             except AccessDeniedSmsRateLimit:
                 return self._show_rate_limit(redirect=None, **kw)
             return self._show_sms_entry(redirect=None, **kw)

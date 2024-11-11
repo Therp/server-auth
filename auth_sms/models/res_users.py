@@ -67,9 +67,13 @@ class ResUsers(models.Model):
     @api.model
     def _auth_sms_generate_code(self):
         """generate a code to send to the user for second factor"""
-        choices = self.env["ir.config_parameter"].get_param(
-            "auth_sms.code_chars",
-            string.ascii_letters + string.digits,
+        choices = (
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(
+                "auth_sms.code_chars",
+                string.ascii_letters + string.digits,
+            )
         )
         return "".join(
             random.choice(choices)
@@ -101,7 +105,7 @@ class ResUsers(models.Model):
                 "session_id": request and request.session.sid,
             }
         )
-        if not user._auth_sms_check_rate_limit():
+        if not user.sudo()._auth_sms_check_rate_limit():
             raise AccessDeniedSmsRateLimit(_("SMS rate limit"))
         if not self.env["sms.provider"].send_sms(user.mobile, code):
             raise UserError(_("Sending SMS failed"))
@@ -140,14 +144,11 @@ class ResUsers(models.Model):
             <= rate_limit_limit
         )
 
-    # def _register_hook(self):
-    #    # don't log our exceptions during RPC dispatch
-    #    if AccessDeniedNoSmsCode not in http.NO_POSTMORTEM:
-    #        http.NO_POSTMORTEM = tuple(
-    #            list(http.NO_POSTMORTEM)
-    #            + [
-    #                AccessDeniedNoSmsCode,
-    #                AccessDeniedWrongSmsCode,
-    #            ],
-    #        )
-    #    return super(ResUsers, self)._register_hook()
+    def _mfa_type(self):
+        """If auth_sms enabled, disable other totp methods."""
+        sudo_self = self.sudo()
+        result = super(ResUsers, sudo_self)._mfa_type()
+        if len(self) != 1 or not sudo_self.auth_sms_enabled:
+            return result
+        # If we get here, we have one user record that is enabled for sms auth.
+        return "auth_sms"
