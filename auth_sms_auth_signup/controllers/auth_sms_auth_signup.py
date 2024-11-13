@@ -32,7 +32,7 @@ class AuthSmsAuthSignup(AuthSignupHome):
                 user.sudo(user)._auth_sms_check_credentials()
             except Exception as e:
                 del request.session["auth_sms.code"]
-                qcontext["error"] = e.message or e
+                qcontext["error"] = e.message if hasattr(e, "message") else str(e)
             if request.session.get("auth_sms.code"):
                 return super(AuthSmsAuthSignup, self).web_auth_reset_password(
                     *args, **kw
