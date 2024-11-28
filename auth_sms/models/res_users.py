@@ -79,7 +79,9 @@ class ResUsers(models.Model):
             random.choice(choices)
             for dummy in range(
                 int(
-                    self.env["ir.config_parameter"].get_param(
+                    self.env["ir.config_parameter"]
+                    .sudo()
+                    .get_param(
                         "auth_sms.code_length",
                         8,
                     ),
@@ -114,13 +116,17 @@ class ResUsers(models.Model):
         """return false if the user has requested an SMS code too often"""
         self.ensure_one()
         rate_limit_hours = float(
-            self.env["ir.config_parameter"].get_param(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(
                 "auth_sms.rate_limit_hours",
                 24,
             )
         )
         rate_limit_limit = float(
-            self.env["ir.config_parameter"].get_param(
+            self.env["ir.config_parameter"]
+            .sudo()
+            .get_param(
                 "auth_sms.rate_limit_limit",
                 10,
             )
