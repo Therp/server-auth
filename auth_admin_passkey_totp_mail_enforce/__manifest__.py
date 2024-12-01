@@ -4,7 +4,7 @@
 {
     "name": "Authentification - Disable 2FA if Passkey",
     "summary": " Disable 2FA if Passkey is being used",
-    "version": "17.0.1.0.0",
+    "version": "16.0.1.0.0",
     "category": "base",
     "author": "360ERP,Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/server-auth",
