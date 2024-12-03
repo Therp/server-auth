@@ -100,7 +100,7 @@ class ResUsers(models.Model):
             request and request.session.sid,
         )
         user = self.env["res.users"].browse(user_id)
-        self.env["auth_sms.code"].create(
+        self.env["auth_sms.code"].sudo().create(
             {
                 "code": code,
                 "user_id": user.id,
@@ -109,7 +109,8 @@ class ResUsers(models.Model):
         )
         if not user.sudo()._auth_sms_check_rate_limit():
             raise AccessDeniedSmsRateLimit(_("SMS rate limit"))
-        if not self.env["sms.provider"].send_sms(user.mobile, code):
+        mobile = user.sudo().mobile
+        if not self.env["sms.provider"].send_sms(mobile, code):
             raise UserError(_("Sending SMS failed"))
 
     def _auth_sms_check_rate_limit(self):

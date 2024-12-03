@@ -39,7 +39,7 @@ class SmsProvider(models.Model):
 
     @api.model
     def send_sms(self, number, text, **kwargs):
-        provider = self.search([], limit=1)
+        provider = self.sudo().search([], limit=1)
         if not provider:
             return False
         _logger.debug(
