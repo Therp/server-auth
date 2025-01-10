@@ -13,8 +13,7 @@ from odoo.tests.common import TransactionCase
 class Common(TransactionCase):
     def setUp(self):
         super(Common, self).setUp()
-        self.odoo_root = http.Root()
-        self.session = self.odoo_root.session_store.new()
+        self.session = http.root.session_store.new()
         self.env["res.users"]._register_hook()
         self.demo_user = self.env.ref("auth_sms.demo_user")
         self.env["auth_sms.code"].search([]).unlink()
@@ -33,10 +32,10 @@ class Common(TransactionCase):
             },
         ).get_environ()
         werkzeug_request = WerkzeugRequest(werkzeug_env)
-        self.odoo_root.setup_session(werkzeug_request)
+        http.root.setup_session(werkzeug_request)
         werkzeug_request.session.db = self.env.cr.dbname
-        self.odoo_root.setup_db(werkzeug_request)
-        self.odoo_root.setup_lang(werkzeug_request)
+        http.root.setup_db(werkzeug_request)
+        http.root.setup_lang(werkzeug_request)
 
         request = http.HttpRequest(werkzeug_request)
         request._env = self.env

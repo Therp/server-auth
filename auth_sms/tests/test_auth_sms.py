@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from unittest.mock import patch
 
+from odoo import http
+
 from .common import Common
 
 
@@ -37,7 +39,7 @@ class TestAuthSms(Common):
             self.assertEqual(response.template, "auth_sms.template_code")
             self.assertTrue(request.session["auth_sms.password"])
             mock_request_post.assert_called_once()
-            self.odoo_root.session_store.save(request.session)
+            http.root.session_store.save(request.session)
 
         # then fill in a wrong code
         with self._request(
