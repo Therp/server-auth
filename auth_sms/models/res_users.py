@@ -1,9 +1,9 @@
-# Copyright 2019 Therp BV <https://therp.nl>
+# Copyright 2019-2025 Therp BV <https://therp.nl>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 import logging
 import random
 import string
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
@@ -114,9 +114,24 @@ class ResUsers(models.Model):
             raise UserError(_("Sending SMS failed"))
 
     def _auth_sms_check_rate_limit(self):
-        """return false if the user has requested an SMS code too often"""
+        """Return false if the user has requested an SMS code too often"""
         self.ensure_one()
-        rate_limit_hours = float(
+        rate_limit_hours = self._get_rate_limit_hours()
+        rate_limit_limit = self._get_rate_limit_limit()
+        if not (rate_limit_hours and rate_limit_limit):
+            return False
+        cutoff_time = fields.Datetime.now() - timedelta(hours=rate_limit_hours)
+        already_sent = self.env["auth_sms.code"].search_count(
+            [("create_date", ">=", cutoff_time), ("user_id", "=", self.id)]
+        )
+        within_limit = already_sent <= rate_limit_limit
+        if not within_limit:
+            _logger.info("To many sms's send to user %(login)s", {"login": self.login})
+        return within_limit
+
+    def _get_rate_limit_hours(self):
+        """Return timeframe in which to check count of sms's send to user."""
+        return float(
             self.env["ir.config_parameter"]
             .sudo()
             .get_param(
@@ -124,31 +139,16 @@ class ResUsers(models.Model):
                 24,
             )
         )
-        rate_limit_limit = float(
+
+    def _get_rate_limit_limit(self):
+        """Return limit of times sms send to user within a specific timeframe."""
+        return float(
             self.env["ir.config_parameter"]
             .sudo()
             .get_param(
                 "auth_sms.rate_limit_limit",
                 10,
             )
-        )
-        return (
-            rate_limit_hours
-            and rate_limit_limit
-            and self.env["auth_sms.code"].search(
-                [
-                    (
-                        "create_date",
-                        ">=",
-                        fields.Datetime.to_string(
-                            datetime.now() - timedelta(hours=rate_limit_hours),
-                        ),
-                    ),
-                    ("user_id", "=", self.id),
-                ],
-                count=True,
-            )
-            <= rate_limit_limit
         )
 
     def _mfa_type(self):

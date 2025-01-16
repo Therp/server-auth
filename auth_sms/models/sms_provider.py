@@ -20,8 +20,7 @@ class SmsProvider(models.Model):
     # could be the preparation for a module base_sms that doesn't rely on
     # Odoo's in app purchases as the v12 sms module does
     _name = "sms.provider"
-    _description = "Holds whatever data necessary to send an SMS via some "
-    "provider"
+    _description = "Holds whatever data necessary to send an SMS via some provider"
     _rec_name = "provider"
     _order = "sequence desc"
 

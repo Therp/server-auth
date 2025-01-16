@@ -4,6 +4,7 @@
     "name": "Two factor authentication via SMS",
     "version": "16.0.1.0.0",
     "author": "Therp BV,Odoo Community Association (OCA)",
+    "maintainers": ["NL66278"],
     "license": "AGPL-3",
     "category": "Tools",
     "website": "https://github.com/OCA/server-auth",
