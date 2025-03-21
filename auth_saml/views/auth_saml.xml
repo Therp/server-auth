@@ -21,7 +21,10 @@
     </template>
     <template id="auth_saml.login" inherit_id="web.login" name="Samlv2 Login buttons">
         <xpath expr="//form" position="before">
-            <t t-set="form_small" t-value="len(saml_providers) &gt; 2" />
+            <t
+                t-set="form_small"
+                t-value="saml_providers and len(saml_providers) &gt; 2 or False"
+            />
         </xpath>
         <xpath expr="//div[hasclass('o_login_auth')]" position="inside">
             <t t-call="auth_saml.providers" />
@@ -76,6 +79,21 @@
                     </div>
                     <group name="idp_settings">
                         <group string="Identity Provider Settings">
+                            <span>
+                                <label for="idp_metadata_url" />
+                                <div>
+                                    <field name="idp_metadata_url" />
+                                    <p
+                                        class="help small"
+                                    >If you provider gives you a URL, use this field preferably</p>
+                                </div>
+                                <button
+                                    type="object"
+                                    string="Refresh"
+                                    name="action_refresh_metadata_from_url"
+                                    attrs="{'invisible': [('idp_metadata_url', '=', False)]}"
+                                />
+                            </span>
                             <label for="idp_metadata" />
                             <div>
                                 <field
